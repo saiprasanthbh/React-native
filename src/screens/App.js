@@ -22,13 +22,13 @@ export default class App extends React.Component{
   try{
     
 firebase.initializeApp({
-  apiKey: "AIzaSyA8fVeqAU1QsHbWS7EfVQBLnU_oIhcrGTc",
-  authDomain: "loginform-5a2b1.firebaseapp.com",
+  apiKey: "",
+  authDomain: "",
   databaseURL: "https://loginform-5a2b1.firebaseio.com",
-  projectId: "loginform-5a2b1",
-  storageBucket: "loginform-5a2b1.appspot.com",
-  messagingSenderId: "437817913958",
-  appId: "1:437817913958:web:f476596568db30bc"
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
 })
     
   }
