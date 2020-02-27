@@ -1,117 +1,108 @@
 import React from 'react';
-import {ImageBackground,Text,View} from 'react-native';
-import {Router,Scene,Actions} from 'react-native-router-flux';
+import {Text,View,StyleSheet,ScrollView,FlatList,ImageBackground, TouchableHighlight, TouchableOpacity,Image, requireNativeComponent,Button} from 'react-native';
+import {Card,Badge} from 'react-native-elements';
+import productsdata from './products';
+import { Actions } from 'react-native-router-flux';
 import firebase from 'firebase';
-import AllocationType from './AllocationType';
-import Workspace from './Workspace';
-import Admin from './Admin';
-import Start from './Start';
-import LoginForm from './LoginForm';
-import AdminLoginForm from './AdminLoginForm';
-import AddUsers from './AddUsers';
-import Calendar from './Calendar';
-import CalendarOut from './CalendarOut';
-import Conference from './Conference';
-import ChangeStatus from './ChangeStatus';
-import More from './More';
-import ChangePasswordForAdmin from './ChangePasswordForAdmin';
 export default class App extends React.Component{
 
- componentWillMount()
-{
-  try{
-    
-firebase.initializeApp({
-  apiKey: "",
-  authDomain: "",
-  databaseURL: "https://loginform-5a2b1.firebaseio.com",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+
+    state={
+        ProductsData:[],
+        Titles:[],
+        Prices:[],
+        Images_Primary:[],
+        SelectedSize:"M",
+        AddToCart:[],
+        CartCounter:0
+    }
+    componentWillMount()
+    {
+productsdata.map((item)=>{this.state.Titles.push(item.title)})
+productsdata.map((item)=>{this.state.Prices.push(item.price)})
+productsdata.map((item)=>{this.state.Images_Primary.push(item.src_1)})
+
+
+    }
+    componentDidMount()
+    {
+        firebase.database().ref('/users').on('value',snapshot=>{
+var temp;
+ temp=snapshot.val().Cart
+this.setState({AddToCart:temp})
+        })
+
+
+        firebase.database().ref('/users').on('value',snapshot=>{
+            var temp;
+             temp=snapshot.val().CartCounter
+            this.setState({CartCounter:temp})
+                    })
+
+
+
+    }
+
+    update=()=>{
+        Actions.cart(),firebase.database().ref('/users').update({Cart:this.state.AddToCart}),firebase.database().ref('/users').update({CartCounter:this.state.CartCounter})
+    }
+
+    addToCart=()=>
+    {
+        this.setState({AddToCart:this.state.AddToCart.concat(productsdata[this.state.Titles.indexOf(item)].id),CartCounter:this.state.CartCounter+1})
+    }
+
+    render()
+    { 
+        
+              
+
+            return(
+                <ImageBackground style={{width:null,height:null,flex:1}} source={{uri:'https://cdn3.vectorstock.com/i/1000x1000/78/57/shopping-cart-icon-isolated-on-purple-background-vector-21547857.jpg'}}>
+                <ScrollView>
+                    <Text></Text>
+                    <Text></Text>
+                    <Text></Text>
+                   <View style={styles.containerStyle}>
+                   <Badge  onPress={()=>{this.setState({SelectedSize:"S"})}} badgeStyle={styles.badgeStyle} value="S"></Badge>
+                   <Badge onPress={()=>{this.setState({SelectedSize:"M"})}} badgeStyle={styles.badgeStyle} value="M"></Badge>
+                   <Badge onPress={()=>{this.setState({SelectedSize:"L"})}} badgeStyle={styles.badgeStyle}value="L"></Badge>
+                   <Badge onPress={()=>{this.setState({SelectedSize:"XL"})}} badgeStyle={styles.badgeStyle} value="XL"></Badge>
+                   <Badge onPress={()=>{this.setState({SelectedSize:"ML"})}} badgeStyle={styles.badgeStyle} value="ML"></Badge>
+                     </View>
+                    <TouchableOpacity onPress={this.update}><Badge badgeStyle={styles.counterStyle} value={this.state.CartCounter}></Badge><Image style={styles.iconStyle} source={require('./Icons/cart.png')}></Image></TouchableOpacity>
+    <FlatList data={this.state.Titles.filter((item)=>{ if(productsdata[this.state.Titles.indexOf(item)].availableSizes.includes(this.state.SelectedSize)){{if(!this.state.AddToCart.includes(productsdata[this.state.Titles.indexOf(item)].id)){return item}}} })} renderItem={({item})=>{return<TouchableOpacity><Card title={item}><Image style={styles.imageStyle} source={this.state.Images_Primary[this.state.Titles.indexOf(item)]}></Image><Text style={{alignSelf:"center"}}>Price:$ {this.state.Prices[this.state.Titles.indexOf(item)]}</Text><Button onPress={this.addToCart} title="Add-To-Cart"></Button></Card></TouchableOpacity>}}></FlatList>    
+
+     </ScrollView>
+     </ImageBackground>
+            )
+    }
+}
+
+const styles=StyleSheet.create({
+    containerStyle:{
+        flexDirection:"row",
+        alignSelf:"center"
+    },
+    badgeStyle:{
+        height:30,
+        width:30,
+        marginLeft:10
+    },
+    counterStyle:{
+        height:20,
+        width:20,
+        marginLeft:320
+    },
+    iconStyle:
+    {
+        width:50,
+        height:50,
+        alignSelf:"flex-end"
+    },
+    imageStyle:{
+        width:120,
+        height:220,
+        alignSelf:"center"
+    }
 })
-    
-  }
-  catch(error)
-  {
-console.log(error);
-
-  }
-
-}
-
-
-
-
-render()
-{
-return(
-
-<Router>
-<Scene key="root" hideNavBar>
-
-<Scene key="main" title="Freez">
-<Scene key="main" component={AllocationType} initial></Scene>
-<Scene key="start" component={Start}></Scene>
-</Scene>
-
-<Scene key="login" title="Login Form">
-<Scene key="login" component={LoginForm}></Scene>
-</Scene>
-
-<Scene key="workspace" title="Select Workspace">
-<Scene key="workspace" component={Workspace}></Scene>
-</Scene>
-
-<Scene key="adminlogin" title="Login Form">
-<Scene key="adminlogin" component={AdminLoginForm}></Scene>
-</Scene>
-
-<Scene key="admin">
-<Scene key="admin" component={Admin}></Scene>
-</Scene>
-
-<Scene key="more">
-<Scene key="more" component={More}></Scene>
-</Scene>
-
-<Scene key="addusers">
-<Scene key="addusers" component={AddUsers}></Scene>
-</Scene>
-
-<Scene key="changestatus" title="Change Status">
-<Scene key="changestatus" component={ChangeStatus}></Scene>
-</Scene>
-
-<Scene key="changepassword" title="Change Password">
-<Scene key="changepassword" component={ChangePasswordForAdmin}></Scene>
-</Scene>
-
-<Scene key="conference" title="Select Conference Romm">
-<Scene key="conference" component={Conference}></Scene>
-</Scene>
-
-
-<Scene key="calendar" title="Check-In">
-<Scene key="calendar" component={Calendar} initial></Scene>
-</Scene>
-
-<Scene key="calendarout" title="Check-Out">
-<Scene key="calendarout" component={CalendarOut}></Scene>
-</Scene>
-
-
-</Scene>
-</Router>
-
-)
-
-
-
-
-
-}
-
-
-
-}

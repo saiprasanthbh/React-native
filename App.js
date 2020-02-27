@@ -1,15 +1,15 @@
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import App from "./src/screens/App";
+import Index from "./src/screens/Index";
 
 const navigator = createStackNavigator(
   {
-    Home: App
+    Home: Index
   },
   {
     initialRouteName: "Home",
     defaultNavigationOptions: {
-      title: "App",
+      title: "Index",
       header:null
     }
   }
